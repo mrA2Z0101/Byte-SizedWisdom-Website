@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Byte-Sized Wisdom</title>
+  <script>
+    // GitHub Pages SPA routing trick:
+    // Store the attempted URL in sessionStorage and redirect to index.html
+    // index.html reads it back and navigates the app to the correct route.
+    sessionStorage.setItem('spa-redirect', location.href);
+    window.location.replace('/');
+  </script>
+</head>
+<body></body>
+</html>
