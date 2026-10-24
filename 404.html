@@ -2,14 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Byte-Sized Wisdom</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lost Chapter — Byte-Sized Wisdom</title>
+  <meta name="robots" content="noindex"/>
   <script>
-    // GitHub Pages SPA routing trick:
-    // Store the attempted URL in sessionStorage and redirect to index.html
-    // index.html reads it back and navigates the app to the correct route.
-    sessionStorage.setItem('spa-redirect', location.href);
-    window.location.replace('/');
+    // Old single-page-app routes (/about, /services/logo, ...) now live on
+    // real pages. Send those visitors to the right chapter.
+    (function () {
+      var parts = location.pathname.split('/').filter(Boolean);
+      var base = '/';
+      if (/\.github\.io$/.test(location.hostname) && parts.length) base = '/' + parts.shift() + '/';
+      var routes = { about: 'about.html', services: 'services.html', pricing: 'pricing.html', contact: 'contact.html' };
+      var page = routes[parts[0]];
+      if (page) {
+        var hash = parts[0] === 'services' && parts[1] ? '#' + parts[1] : '';
+        location.replace(base + page + hash);
+      } else {
+        window.__bswBase = base;
+      }
+    })();
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=Syne:wght@800&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; display: grid; place-items: center; padding: 24px; text-align: center;
+      background: #030E14; color: #D8EEF2; font-family: 'Plus Jakarta Sans', sans-serif;
+      background-image: radial-gradient(rgba(0, 196, 212, 0.07) 1px, transparent 1px); background-size: 28px 28px;
+    }
+    .mono { font-family: 'Share Tech Mono', monospace; color: #00C4D4; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; }
+    h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(36px, 7vw, 68px); line-height: 1.08; margin: 18px 0; }
+    h1 span { color: #2AE8F5; }
+    p { color: #8AACB4; max-width: 520px; margin: 0 auto 32px; line-height: 1.7; }
+    a { display: inline-block; background: #00C4D4; color: #030E14; font-weight: 700; padding: 14px 28px; border-radius: 10px; text-decoration: none; }
+    a:hover { background: #2AE8F5; }
+    svg { width: 64px; height: 64px; margin: 0 auto 8px; display: block; }
+  </style>
 </head>
-<body></body>
+<body>
+  <main>
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#040f12" rx="7"/><g transform="translate(-55.22,-1.70) scale(0.20943)"><rect x="335" y="40" width="10" height="10" fill="#00788e"/><rect x="332" y="50" width="16" height="15" fill="#009ab2"/><rect x="284" y="65" width="112" height="16" fill="#00adc0"/><rect x="284" y="81" width="112" height="16" fill="#00adc0"/><rect x="284" y="97" width="112" height="16" fill="#00adc0"/><rect x="300" y="97" width="16" height="16" fill="#040f12"/><rect x="364" y="97" width="16" height="16" fill="#040f12"/><rect x="303" y="100" width="10" height="10" fill="#5ce0f8"/><rect x="367" y="100" width="10" height="10" fill="#5ce0f8"/><rect x="284" y="113" width="112" height="16" fill="#00adc0"/></g></svg>
+    <p class="mono">Error 404 &middot; Lost chapter</p>
+    <h1>This page isn&rsquo;t <span>in the story.</span></h1>
+    <p>Byte looked everywhere. The chapter you&rsquo;re after may have moved, or it was never written. Let&rsquo;s get you back to the beginning.</p>
+    <a id="home" href="/">Back to the prologue</a>
+  </main>
+  <script>if (window.__bswBase) document.getElementById('home').href = window.__bswBase;</script>
+</body>
 </html>
