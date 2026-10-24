@@ -175,12 +175,12 @@ h3 { font-size: clamp(20px, 2.2vw, 24px); font-weight: 700; line-height: 1.25; }
 @media (max-width: 1320px) { .rail { display: none; } }
 
 /* ---------- Reveal on scroll ---------- */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2, .7, .2, 1); }
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .2, 1); }
 .reveal.is-visible { opacity: 1; transform: none; }
-.reveal[data-delay="1"] { transition-delay: .12s; }
-.reveal[data-delay="2"] { transition-delay: .24s; }
-.reveal[data-delay="3"] { transition-delay: .36s; }
-.reveal[data-delay="4"] { transition-delay: .48s; }
+.reveal[data-delay="1"] { transition-delay: .08s; }
+.reveal[data-delay="2"] { transition-delay: .16s; }
+.reveal[data-delay="3"] { transition-delay: .24s; }
+.reveal[data-delay="4"] { transition-delay: .32s; }
 .no-js .reveal { opacity: 1; transform: none; }
 
 /* ---------- Hero / prologue ---------- */
@@ -527,11 +527,20 @@ details.faq p { padding-bottom: 14px; }
 .pin-dial li.done { color: var(--mid); }
 .pin-bar { height: 3px; border-radius: 3px; background: var(--border); margin-top: 28px; overflow: hidden; }
 .pin-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--dim), var(--highlight)); transform-origin: left; transform: scaleX(var(--p, 0)); }
-.js .pin { height: calc(var(--n, 5) * 60vh + 100vh); }
-.js .pin-sticky { position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); display: flex; align-items: center; }
-.js .pin-steps { min-height: 220px; }
-.js .pin-step { position: absolute; inset: 0 0 auto 0; border: 0; opacity: 0; transform: translateY(24px); transition: opacity .45s ease, transform .45s ease; }
-.js .pin-step.on { opacity: 1; transform: none; }
+/* Pinned on wide screens only; on phones the five steps are a plain list, so a
+   swipe always moves the page and the address bar can't jostle a pinned panel. */
+@media (min-width: 901px) {
+  .js .pin { height: calc(var(--n, 5) * 32vh + 100vh); }
+  .js .pin-sticky { position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); display: flex; align-items: center; }
+  .js .pin-steps { min-height: 220px; }
+  /* The old step leaves quickly, then the new one arrives, so they never overlap. */
+  .js .pin-step { position: absolute; inset: 0 0 auto 0; border: 0; opacity: 0; transform: translateY(16px); transition: opacity .15s ease, transform .15s ease; }
+  .js .pin-step.on { opacity: 1; transform: none; transition: opacity .3s ease .15s, transform .3s ease .15s; }
+}
+@media (max-width: 900px) {
+  .pin { padding: clamp(80px, 12vh, 140px) 0; }
+  .pin-dial, .pin-bar { display: none; }
+}
 .no-js .pin-dial, .no-js .pin-bar { display: none; }
 @media (max-width: 760px) {
   .pin-stage { grid-template-columns: 1fr; }
@@ -571,8 +580,8 @@ details.faq p { padding-bottom: 14px; }
 .quote { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3.4vw, 40px); line-height: 1.3; letter-spacing: -0.02em; }
 .quote-by { margin-top: 24px; color: var(--mid); font-size: 15px; }
 .quote-by b { color: var(--text); }
-.js .quote-item { position: absolute; inset: 0; opacity: 0; transform: translateY(12px); transition: opacity .6s, transform .6s; pointer-events: none; }
-.js .quote-item.on { opacity: 1; transform: none; pointer-events: auto; }
+.js .quote-item { position: absolute; inset: 0; opacity: 0; transform: translateY(12px); transition: opacity .25s, transform .25s; pointer-events: none; }
+.js .quote-item.on { opacity: 1; transform: none; pointer-events: auto; transition: opacity .45s .25s, transform .45s .25s; }
 .no-js .quote-item + .quote-item { margin-top: 48px; }
 @media (max-width: 640px) { .quote-stage { min-height: 360px; } }
 .quote-dots { display: flex; gap: 8px; justify-content: center; margin-top: 28px; }
@@ -594,15 +603,14 @@ details.more .svc-details { padding: 0 16px 16px; }
    Home stage — Byte stays on screen while the world behind him changes
    ========================================================================== */
 
-html:has(body.home) { scroll-snap-type: y proximity; }
-.home .scene { scroll-snap-align: start; min-height: 100vh; min-height: 100svh; z-index: 2; }
+.home .scene { min-height: 100vh; min-height: 100svh; z-index: 2; }
 .home main { position: relative; z-index: 2; }
 .home .footer { position: relative; z-index: 2; background: var(--bg); }
 .home .scene-title { font-weight: 700; }
 
 /* Backdrops: one fixed layer per scene, cross-faded */
 .stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--bg); }
-.stage .bg { position: absolute; inset: 0; opacity: 0; transition: opacity 1.1s ease; }
+.stage .bg { position: absolute; inset: 0; opacity: 0; transition: opacity .55s ease; }
 .stage .bg.on { opacity: 1; }
 .bg-start {
   background:
@@ -641,16 +649,18 @@ html:has(body.home) { scroll-snap-type: y proximity; }
 .bg-proof { background: linear-gradient(180deg, #04121C 0%, #0B2A3E 40%, #33305C 78%, #6E4566 100%); }
 .bg-offer { background: radial-gradient(900px 700px at 50% 40%, rgba(0, 196, 212, 0.16), transparent 60%), #031018; }
 .bg-voices { background: radial-gradient(800px 600px at 30% 40%, rgba(124, 92, 255, 0.16), transparent 60%), radial-gradient(800px 600px at 80% 70%, rgba(0, 196, 212, 0.14), transparent 60%), #040C16; }
-.bg-next { background: radial-gradient(900px 700px at 50% 70%, rgba(255, 255, 255, 0.7), transparent 60%), linear-gradient(180deg, #E6FAFD 0%, #BFF2F8 55%, #98E2EF 100%); }
+/* The light finale carries its own background and simply scrolls in (no cross-fade). */
 
 /* Byte, the mascot */
 .mascot {
-  --x: calc(72vw - 150px); --y: calc(52vh - 150px); --s: 1.2; --o: 1;
-  position: fixed; left: 0; top: 0; width: 300px; height: 300px; z-index: 1; pointer-events: none;
+  --x: calc(72vw - 150px); --y: calc(52vh - 150px); --s: 1.2; --o: 0;
+  position: fixed; left: 0; top: 0; width: 300px; height: 300px; z-index: 3; pointer-events: none;
   transform: translate(var(--x), var(--y)); opacity: var(--o);
-  transition: transform 1.1s cubic-bezier(.2, .8, .2, 1), opacity .6s ease;
+  transition: opacity .15s ease;
 }
-.mascot-body { width: 100%; height: 100%; transform: scale(var(--s)); transition: transform 1.1s cubic-bezier(.2, .8, .2, 1); position: relative; }
+.mascot-body { width: 100%; height: 100%; transform: scale(var(--s)); position: relative; }
+.mascot.arrive .mascot-float > svg { animation: arrive .45s cubic-bezier(.2, .9, .3, 1.3); }
+@keyframes arrive { from { transform: scale(.7) translateY(16px); } to { transform: none; } }
 .mascot-float { width: 100%; height: 100%; animation: float 5s ease-in-out infinite; }
 .mascot svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 18px 40px rgba(0, 196, 212, 0.35)); }
 .mascot-glow {
@@ -686,7 +696,7 @@ html:has(body.home) { scroll-snap-type: y proximity; }
 .say[data-at="left"]   { left: auto; right: 98%; bottom: auto; top: 22%; translate: none; border-radius: 1.1em 1.1em .3em 1.1em; }
 .say[data-at="right"]  { left: 98%; bottom: auto; top: 22%; translate: none; border-radius: 1.1em 1.1em 1.1em .3em; }
 .say[data-at="bottom"] { left: 50%; bottom: auto; top: 88%; translate: -50% 0; border-radius: .3em 1.1em 1.1em 1.1em; }
-.say:empty, .say.hide { opacity: 0; }
+.say:empty, .say.hide { opacity: 0; transition-duration: .06s; }
 .say.pop { animation: sayPop .45s cubic-bezier(.2, .8, .2, 1); }
 @keyframes sayPop { from { opacity: 0; scale: .85; } to { opacity: 1; scale: 1; } }
 .mascot[data-pose="next"] .say { background: rgba(255, 255, 255, 0.75); color: #052530; border-color: rgba(0, 120, 142, 0.25); }
@@ -715,7 +725,7 @@ html:has(body.home) { scroll-snap-type: y proximity; }
 .btn-glass:hover { background: rgba(255, 255, 255, 0.18); transform: translateY(-2px); }
 
 /* Light finale */
-.scene.light { color: #052530; }
+.scene.light { color: #052530; background: radial-gradient(900px 700px at 50% 70%, rgba(255, 255, 255, 0.7), transparent 60%), linear-gradient(180deg, #E6FAFD 0%, #BFF2F8 55%, #98E2EF 100%); }
 .scene.light .kicker { color: #00788E; }
 .scene.light .hl { color: #00869A; }
 .scene.light .scene-sub { color: #2B5A66; }

@@ -35,7 +35,7 @@
           revealer.unobserve(entry.target);
         }
       });
-    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+    }, { rootMargin: '0px 0px -4% 0px', threshold: 0.05 });
     reveals.forEach(function (el) { revealer.observe(el); });
   } else {
     reveals.forEach(function (el) { el.classList.add('is-visible'); });
@@ -93,12 +93,20 @@
   var say = mascot && mascot.querySelector('.say');
   var backdrops = Array.prototype.slice.call(document.querySelectorAll('.stage .bg'));
   var currentScene = null;
+  var homeFooter = scenes.length && document.querySelector('.footer');
+  if (homeFooter) {
+    homeFooter.setAttribute('data-scene', 'footer');
+    homeFooter.setAttribute('data-pose', 'away');
+    scenes.push(homeFooter);
+  }
 
   function setScene(sc) {
     if (sc === currentScene) return;
     currentScene = sc;
     var key = sc.getAttribute('data-scene');
-    backdrops.forEach(function (bg) { bg.classList.toggle('on', bg.getAttribute('data-for') === key); });
+    // The footer keeps whatever backdrop the last scene had; only Byte steps aside.
+    // Scenes without their own backdrop (the light finale, the footer) keep the last one.
+    if (document.querySelector('.stage .bg[data-for="' + key + '"]')) backdrops.forEach(function (bg) { bg.classList.toggle('on', bg.getAttribute('data-for') === key); });
     if (!mascot) return;
     mascot.setAttribute('data-pose', sc.getAttribute('data-pose') || 'away');
     mascot.setAttribute('data-mood', sc.getAttribute('data-mood') || 'normal');
@@ -107,9 +115,9 @@
       say.classList.add('hide');
       say.textContent = sc.getAttribute('data-say') || '';
       sceneChangedAt = Date.now();
-      placeSaySoon(travelLeft());
     }
     fitByte();
+    if (say && say.textContent) placeSaySoon(travelLeft());
   }
 
   /* Byte's spot per pose, as fractions of the viewport: [x, y, scale, anchor].
@@ -121,7 +129,7 @@
       next: [.50, .78, .9, 'bottom']
     },
     narrow: {
-      hero: [.50, .78, .78, 'bottom'], listen: [.82, .86, .3, 'bottom'], problem: [.84, .37, .3, 'center'],
+      hero: [.50, .78, .78, 'bottom'], listen: [.82, .86, .3, 'bottom'],
       guide: [.50, .76, .75, 'bottom'], plan: [.82, .86, .3, 'bottom'], voices: [.82, .86, .3, 'bottom'],
       next: [.50, .78, .72, 'bottom']
     }
@@ -180,41 +188,98 @@
         if (clear) fit = { x: cx - 150, y: cy - 150, s: s };
       }
     }
-    var key;
-    if (fit) {
+    applyFit(fit);
+  }
+
+  // Byte never glides across the page (he'd pass over text on the way):
+  // he fades out, moves, then pops back in at his new spot.
+  var moveTimer = null;
+  var lastBox = null;
+  function applyFit(fit) {
+    var key = fit ? [Math.round(fit.x), Math.round(fit.y), fit.s.toFixed(2)].join() : 'away';
+    if (key === lastFit) return;
+    var wasShown = lastFit && lastFit !== 'away';
+    lastFit = key;
+    clearTimeout(moveTimer);
+    moveTimer = null;
+    if (say) say.classList.add('hide');
+    if (!fit) {
+      // Nowhere clear to stand in this scene: Byte steps out of view.
+      lastBox = null;
+      mascot.style.setProperty('--o', '0');
+      return;
+    }
+    function arrive() {
+      // The page may have moved since the spot was chosen: if it is no longer
+      // clear, stay out of view and look again once scrolling settles.
+      var box = robotBox(fit.x + 150, fit.y + 150, fit.s);
+      var blocks = obstacles();
+      for (var j = 0; j < blocks.length; j++) {
+        if (overlaps(box, blocks[j], 2)) {
+          lastFit = 'away'; lastBox = null;
+          mascot.style.setProperty('--o', '0');
+          fitByteSoon();
+          return;
+        }
+      }
       mascot.style.setProperty('--x', fit.x.toFixed(1) + 'px');
       mascot.style.setProperty('--y', fit.y.toFixed(1) + 'px');
       mascot.style.setProperty('--s', fit.s.toFixed(3));
+      lastBox = robotBox(fit.x + 150, fit.y + 150, fit.s);
+      mascot.classList.remove('arrive');
+      void mascot.offsetWidth;
+      mascot.classList.add('arrive');
       mascot.style.setProperty('--o', '1');
-      key = [Math.round(fit.x), Math.round(fit.y), fit.s.toFixed(2)].join();
-    } else {
-      // Nowhere clear to stand in this scene: Byte steps out of view.
-      mascot.style.setProperty('--o', '0');
-      key = 'away';
-    }
-    if (key !== lastFit) {
-      lastFit = key;
       sceneChangedAt = Date.now();
-      if (say) { say.classList.add('hide'); placeSaySoon(travelLeft()); }
+      if (say && say.textContent) placeSaySoon(travelLeft());
+    }
+    if (wasShown && !reduceMotion) {
+      mascot.style.setProperty('--o', '0');
+      moveTimer = setTimeout(function () { moveTimer = null; arrive(); }, 160);
+    } else {
+      arrive();
+    }
+  }
+
+  // After scrolling settles, only move Byte if something now covers his spot
+  // (or he stepped away and there may be room again). No restless re-fitting.
+  function checkByte() {
+    fitTimer = null;
+    if (!mascot || !currentScene) return;
+    if (!lastBox) { fitByte(); return; }
+    var blocks = obstacles();
+    for (var j = 0; j < blocks.length; j++) {
+      if (overlaps(lastBox, blocks[j], 4)) { lastFit = lastFit + '!'; fitByte(); return; }
     }
   }
 
   function fitByteSoon() {
     clearTimeout(fitTimer);
-    fitTimer = setTimeout(fitByte, 160);
+    fitTimer = setTimeout(checkByte, 160);
   }
+
+  // Phones resize the viewport when the address bar slides in and out; ignore
+  // those small height changes so Byte doesn't hop around while you scroll.
+  var lastW = window.innerWidth, lastH = window.innerHeight;
+  window.addEventListener('resize', function () {
+    var w = window.innerWidth, h = window.innerHeight;
+    if (w === lastW && Math.abs(h - lastH) < 150) return;
+    lastW = w; lastH = h;
+    lastFit = '';
+    fitByte();
+  });
 
   /* Speech bubble placement: try above, left, right, then below Byte, and
      use the first spot that is fully on screen and clear of any text,
      buttons or cards. If none is clear, Byte stays quiet. */
   var SAY_SPOTS = ['top', 'left', 'right', 'bottom'];
-  var SAY_OBSTACLES = 'main h1, main h2, main h3, main p, main .btn, main li:not(.pin-step), main .pin-step.on, main .ba, main .path, main .quote-item.on, main .quote-dots button, main .scroll-cue';
+  var SAY_OBSTACLES = 'main h1, main h2, main h3, main p, main .btn, main li:not(.pin-step), main .pin-step.on, main .ba, main .path, main .quote-item.on, main .quote-dots button, main .scroll-cue, .home .footer';
   var sayTimer = null;
   var sceneChangedAt = 0;
 
   // Time until Byte finishes moving to his current spot (at least a short pause).
   function travelLeft() {
-    return reduceMotion ? 50 : Math.max(180, 1150 - (Date.now() - sceneChangedAt));
+    return reduceMotion ? 50 : Math.max(120, 520 - (Date.now() - sceneChangedAt));
   }
 
   function overlaps(a, b, pad) {
@@ -274,10 +339,22 @@
     if (scenes.length) {
       var activeScene = scenes[0];
       scenes.forEach(function (sc) {
-        if (sc.getBoundingClientRect().top < vh * 0.5) activeScene = sc;
+        if (sc.getBoundingClientRect().top < vh * (sc === homeFooter ? 0.92 : 0.5)) activeScene = sc;
       });
       setScene(activeScene);
-      // Re-check Byte's spot once scrolling settles.
+      // Text scrolling into Byte's spot: he steps aside right away instead of being
+      // covered, and comes back (refitted) once scrolling settles.
+      if (lastBox && !moveTimer) {
+        var blocks = obstacles();
+        for (var b = 0; b < blocks.length; b++) {
+          if (overlaps(lastBox, blocks[b], 2)) {
+            lastBox = null; lastFit = 'away';
+            mascot.style.setProperty('--o', '0');
+            if (say) say.classList.add('hide');
+            break;
+          }
+        }
+      }
       fitByteSoon();
       // Content scrolling under the bubble: step aside, re-place once scrolling settles.
       if (say && say.textContent) {
@@ -304,6 +381,12 @@
     pins.forEach(function (pin) {
       var steps = pin.querySelectorAll('.pin-step');
       var dial = pin.querySelectorAll('.pin-dial li');
+      var sticky = pin.querySelector('.pin-sticky');
+      if (sticky && getComputedStyle(sticky).position !== 'sticky') {
+        // Phones: a plain list, every step shown.
+        for (var k = 0; k < steps.length; k++) steps[k].classList.add('on');
+        return;
+      }
       var r = pin.getBoundingClientRect();
       var span = pin.offsetHeight - vh;
       var p = span > 0 ? Math.max(0, Math.min(1, -r.top / span)) : 0;
