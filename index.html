@@ -17,9 +17,58 @@
   <link rel="stylesheet" href="assets/css/story.css"/>
   <script src="assets/js/story.js" defer></script>
 </head>
-<body>
+<body class="home">
   <a class="skip-link" href="#main">Skip to the story</a>
   <div class="progress" aria-hidden="true"></div>
+  <div class="stage" aria-hidden="true">
+    <div class="bg bg-start on" data-for="start"></div>
+    <div class="bg bg-you" data-for="you"></div>
+    <div class="bg bg-problem" data-for="problem"></div>
+    <div class="bg bg-guide" data-for="guide"></div>
+    <div class="bg bg-plan" data-for="plan"></div>
+    <div class="bg bg-proof" data-for="proof"></div>
+    <div class="bg bg-offer" data-for="offer"></div>
+    <div class="bg bg-voices" data-for="voices"></div>
+    <div class="bg bg-next" data-for="next"></div>
+  </div>
+  <div class="mascot" data-pose="hero" data-mood="happy" aria-hidden="true">
+    <div class="mascot-body">
+      <div class="mascot-float">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <linearGradient id="byteBody" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7DF4FF"/><stop offset=".45" stop-color="#14CFE0"/><stop offset="1" stop-color="#00809A"/>
+          </linearGradient>
+          <radialGradient id="byteBulb"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#9FF6FF"/><stop offset="1" stop-color="#2AE8F5"/></radialGradient>
+          <linearGradient id="byteEye" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8FAFF"/><stop offset="1" stop-color="#3FD8F2"/></linearGradient>
+        </defs>
+        <rect x="95" y="20" width="10" height="28" rx="4" fill="#0098AE"/>
+        <circle class="bulb" cx="100" cy="17" r="11" fill="url(#byteBulb)"/>
+        <rect x="8" y="90" width="20" height="40" rx="8" fill="#0090A6"/>
+        <rect x="172" y="90" width="20" height="40" rx="8" fill="#0090A6"/>
+        <rect x="20" y="44" width="160" height="126" rx="40" fill="url(#byteBody)"/>
+        <rect x="44" y="52" width="112" height="14" rx="7" fill="#FFFFFF" opacity=".38"/>
+        <rect x="38" y="80" width="124" height="72" rx="24" fill="#04121A"/>
+        <circle cx="56" cy="138" r="6" fill="#FF8FB8" opacity=".45"/>
+        <circle cx="144" cy="138" r="6" fill="#FF8FB8" opacity=".45"/>
+        <g class="eyes">
+          <rect x="62" y="96" width="24" height="28" rx="8" fill="url(#byteEye)"/>
+          <rect x="114" y="96" width="24" height="28" rx="8" fill="url(#byteEye)"/>
+          <rect x="67" y="101" width="7" height="7" rx="2" fill="#FFFFFF"/>
+          <rect x="119" y="101" width="7" height="7" rx="2" fill="#FFFFFF"/>
+        </g>
+        <g class="happy" fill="none" stroke="#5CE8FA" stroke-width="7" stroke-linecap="round">
+          <path d="M62 116 q12 -18 24 0"/><path d="M114 116 q12 -18 24 0"/>
+        </g>
+        <path class="smile" d="M90 134 q10 8 20 0" fill="none" stroke="#5CE8FA" stroke-width="4" stroke-linecap="round"/>
+        <path class="frown" d="M90 140 q10 -8 20 0" fill="none" stroke="#F5A524" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      </div>
+      <div class="mascot-glow"></div>
+      <p class="say">Hi, I&rsquo;m Byte. Let me tell you a story.</p>
+    </div>
+  </div>
+  <div class="dock" aria-hidden="true"><i></i></div>
   <header class="nav">
     <div class="container">
       <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#040f12" rx="7"/><g transform="translate(-55.22,-1.70) scale(0.20943)"><rect x="335" y="40" width="10" height="10" fill="#00788e"/><rect x="332" y="50" width="16" height="15" fill="#009ab2"/><rect x="332" y="50" width="16" height="3" fill="#00c8e0"/><rect x="284" y="65" width="112" height="16" fill="#00adc0"/><rect x="284" y="65" width="112" height="4" fill="#00cce0"/><rect x="284" y="81" width="112" height="16" fill="#00adc0"/><rect x="284" y="97" width="112" height="16" fill="#00adc0"/><rect x="300" y="97" width="16" height="16" fill="#040f12"/><rect x="364" y="97" width="16" height="16" fill="#040f12"/><rect x="303" y="100" width="10" height="10" fill="#5ce0f8"/><rect x="367" y="100" width="10" height="10" fill="#5ce0f8"/><rect x="306" y="103" width="4" height="4" fill="#c8f8ff"/><rect x="370" y="103" width="4" height="4" fill="#c8f8ff"/><rect x="284" y="113" width="112" height="16" fill="#00adc0"/></g></svg><span>Byte-Sized Wisdom</span></a>
@@ -37,37 +86,28 @@
 
   <main id="main">
 
-    <!-- 1. Hook -->
-    <section class="scene" id="start" data-chapter="Start">
-      <div class="container hero-grid">
-        <div>
+    <section class="scene" id="start" data-scene="start" data-pose="hero" data-mood="happy" data-say="Hi, I&rsquo;m Byte. Let me tell you a story.">
+      <div class="container">
+        <div class="hero-copy">
           <p class="kicker reveal">Branding + AI for small business</p>
           <h1 class="scene-title reveal" data-delay="1">Every business has a story. <span class="hl">Let&rsquo;s tell yours.</span></h1>
           <p class="scene-sub reveal" data-delay="2">A brand people remember. AI that does the busywork.</p>
           <div class="cta-row mt-m reveal" data-delay="3">
             <a class="btn btn-primary" href="contact.html">Book a free call</a>
-            <a class="btn btn-ghost" href="#problem">See how &darr;</a>
+            <a class="btn btn-glass" href="#you">See the story</a>
           </div>
         </div>
-        <div class="chat" aria-label="A short chat with Byte, the Byte-Sized Wisdom robot">
-          <div class="chat-who"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#040f12" rx="7"/><g transform="translate(-55.22,-1.70) scale(0.20943)"><rect x="335" y="40" width="10" height="10" fill="#00788e"/><rect x="332" y="50" width="16" height="15" fill="#009ab2"/><rect x="332" y="50" width="16" height="3" fill="#00c8e0"/><rect x="284" y="65" width="112" height="16" fill="#00adc0"/><rect x="284" y="65" width="112" height="4" fill="#00cce0"/><rect x="284" y="81" width="112" height="16" fill="#00adc0"/><rect x="284" y="97" width="112" height="16" fill="#00adc0"/><rect x="300" y="97" width="16" height="16" fill="#040f12"/><rect x="364" y="97" width="16" height="16" fill="#040f12"/><rect x="303" y="100" width="10" height="10" fill="#5ce0f8"/><rect x="367" y="100" width="10" height="10" fill="#5ce0f8"/><rect x="306" y="103" width="4" height="4" fill="#c8f8ff"/><rect x="370" y="103" width="4" height="4" fill="#c8f8ff"/><rect x="284" y="113" width="112" height="16" fill="#00adc0"/></g></svg><span>BYTE &middot; YOUR GUIDE</span></div>
-          <p class="bubble byte" style="--i:0">Hi, I&rsquo;m Byte.</p>
-          <p class="bubble byte" style="--i:1">What&rsquo;s slowing your business down?</p>
-          <p class="bubble you" style="--i:2">People don&rsquo;t get what we do. And I&rsquo;m buried in busywork.</p>
-          <p class="bubble byte" style="--i:3">Classic. Scroll down. I&rsquo;ll show you how this story ends. ↓</p>
-        </div>
       </div>
+      <a class="scroll-cue" href="#you" aria-label="Scroll to explore">Scroll to explore<i></i></a>
     </section>
 
-    <!-- 2. The feeling -->
-    <section class="scene" id="you" data-chapter="You">
+    <section class="scene" id="you" data-scene="you" data-pose="listen" data-mood="normal">
       <div class="container">
         <p class="lit">You built something real. But visitors decide in <span class="hl">three seconds,</span> and most of your week goes to work a <span class="hl">machine could do.</span></p>
       </div>
     </section>
 
-    <!-- 3. The problem -->
-    <section class="scene" id="problem" data-chapter="The problem">
+    <section class="scene" id="problem" data-scene="problem" data-pose="problem" data-mood="worried" data-say="Uh-oh. Sound familiar?">
       <div class="container">
         <p class="kicker reveal">The problem</p>
         <h2 class="scene-title sm reveal" data-delay="1">Sound familiar?</h2>
@@ -79,23 +119,14 @@
       </div>
     </section>
 
-    <!-- 4. The guide -->
-    <section class="scene center" id="guide" data-chapter="The guide">
+    <section class="scene center top" id="guide" data-scene="guide" data-pose="guide" data-mood="happy" data-say="That&rsquo;s where I come in.">
       <div class="container">
         <p class="kicker reveal">Enter the guide</p>
         <h2 class="scene-title sm reveal" data-delay="1">Designers don&rsquo;t get systems.<br/>Developers don&rsquo;t get brand.<br/><span class="hl">We do both.</span></h2>
-        <div class="meet-row reveal" data-delay="2" aria-hidden="true">
-          <div class="orb">Brand<small>how you&rsquo;re seen</small></div>
-          <span class="plus">+</span>
-          <div class="orb">AI &amp; systems<small>how you run</small></div>
-          <span class="plus">=</span>
-          <div class="orb you">One partner<small>no middleman</small></div>
-        </div>
       </div>
     </section>
 
-    <!-- 5. The plan (pinned) -->
-    <section class="pin" id="plan" data-chapter="The plan">
+    <section class="pin" id="plan" data-scene="plan" data-pose="plan" data-mood="normal" data-say="Five steps. Zero surprises.">
       <div class="pin-sticky">
         <div class="container">
           <p class="kicker">The plan</p>
@@ -116,8 +147,7 @@
       </div>
     </section>
 
-    <!-- 6. Proof -->
-    <section class="scene" id="proof" data-chapter="Before &amp; after">
+    <section class="scene" id="proof" data-scene="proof" data-pose="away">
       <div class="container">
         <p class="kicker reveal">Before &amp; after</p>
         <h2 class="scene-title sm reveal" data-delay="1">Real builds. <span class="hl">Honest labels.</span></h2>
@@ -147,8 +177,7 @@
       </div>
     </section>
 
-    <!-- 7. The offer -->
-    <section class="scene center" id="offer" data-chapter="What we do">
+    <section class="scene center" id="offer" data-scene="offer" data-pose="away">
       <div class="container">
         <p class="kicker reveal">What we do</p>
         <h2 class="scene-title sm reveal" data-delay="1">Two disciplines. <span class="hl">One partner.</span></h2>
@@ -164,12 +193,11 @@
             <div class="pills"><a href="services.html#ai-workflow">AI Workflow Automation</a><a href="services.html#ai-copywriting">AI Copywriting System</a><a href="services.html#ai-chatbot">Chatbot &amp; Lead Capture</a><a href="services.html#ai-reporting">AI Reporting &amp; Dashboards</a><a href="services.html#ai-strategy">AI Tool Stack Consultation</a><a href="services.html#ai-brand-assets">AI Brand Asset Generation</a></div>
           </div>
         </div>
-        <div class="cta-row mt-m reveal"><a class="btn btn-ghost" href="pricing.html">See pricing &rarr;</a></div>
+        <div class="cta-row mt-m reveal"><a class="btn btn-glass" href="pricing.html">See pricing &rarr;</a></div>
       </div>
     </section>
 
-    <!-- 8. Voices -->
-    <section class="scene center" id="voices" data-chapter="Voices">
+    <section class="scene center" id="voices" data-scene="voices" data-pose="voices" data-mood="happy" data-say="They said it, not me.">
       <div class="container">
         <p class="kicker reveal">What clients say</p>
         <div class="quote-stage reveal" data-delay="1">
@@ -180,15 +208,14 @@
       </div>
     </section>
 
-    <!-- 9. The ending -->
-    <section class="scene center epilogue" id="next" data-chapter="Your move">
+    <section class="scene center top light" id="next" data-scene="next" data-pose="next" data-mood="happy" data-say="Your turn!">
       <div class="container">
         <p class="kicker reveal">The next chapter</p>
         <h2 class="scene-title reveal" data-delay="1">Your move.</h2>
         <p class="scene-sub reveal" data-delay="2">A free 30-minute call. No pressure, no pitch.</p>
         <div class="cta-row mt-m reveal" data-delay="3">
           <a class="btn btn-primary" href="contact.html">Book a free call</a>
-          <a class="btn btn-ghost" href="about.html">Meet the guide</a>
+          <a class="btn btn-glass" href="about.html">Meet the guide</a>
         </div>
       </div>
     </section>

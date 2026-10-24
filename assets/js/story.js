@@ -87,8 +87,32 @@
     pin.style.setProperty('--n', pin.querySelectorAll('.pin-step').length);
   });
 
+  /* ---- Home stage: Byte's pose, mood and line, plus the backdrop, follow the scene ---- */
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('[data-scene]'));
+  var mascot = document.querySelector('.mascot');
+  var say = mascot && mascot.querySelector('.say');
+  var backdrops = Array.prototype.slice.call(document.querySelectorAll('.stage .bg'));
+  var currentScene = null;
+
+  function setScene(sc) {
+    if (sc === currentScene) return;
+    currentScene = sc;
+    var key = sc.getAttribute('data-scene');
+    backdrops.forEach(function (bg) { bg.classList.toggle('on', bg.getAttribute('data-for') === key); });
+    if (!mascot) return;
+    mascot.setAttribute('data-pose', sc.getAttribute('data-pose') || 'away');
+    mascot.setAttribute('data-mood', sc.getAttribute('data-mood') || 'normal');
+    if (say) {
+      say.textContent = sc.getAttribute('data-say') || '';
+      say.classList.remove('pop');
+      void say.offsetWidth;
+      if (say.textContent) say.classList.add('pop');
+    }
+  }
+
   /* ---- Scroll-driven state: reading progress, active chapter, journey line ---- */
   var progress = document.querySelector('.progress');
+  var dock = document.querySelector('.dock');
   var journeys = Array.prototype.slice.call(document.querySelectorAll('.journey'));
   var ticking = false;
 
@@ -98,7 +122,17 @@
     var vh = window.innerHeight;
     var max = document.documentElement.scrollHeight - vh;
 
-    if (progress) progress.style.setProperty('--read', max > 0 ? Math.min(scrollY / max, 1).toFixed(4) : 0);
+    var read = max > 0 ? Math.min(scrollY / max, 1).toFixed(4) : 0;
+    if (progress) progress.style.setProperty('--read', read);
+    if (dock) dock.style.setProperty('--read', read);
+
+    if (scenes.length) {
+      var activeScene = scenes[0];
+      scenes.forEach(function (sc) {
+        if (sc.getBoundingClientRect().top < vh * 0.5) activeScene = sc;
+      });
+      setScene(activeScene);
+    }
 
     if (railLinks.length) {
       var active = 0;

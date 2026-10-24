@@ -8,7 +8,7 @@ Plain HTML, CSS, and JavaScript. There's no build step and no framework. GitHub 
 
 | File | Story role |
 | --- | --- |
-| `index.html` | The main story, told in short full-screen scenes with one idea each: the hook (a chat with Byte) → a sentence that lights up word by word → the problem → the guide → the plan (five steps that swap while the section is pinned) → before & after → what we do → client quotes → "Your move" |
+| `index.html` | The main story, told in short full-screen scenes. Byte (the robot from the logo) stays on screen, changes pose and mood, and says one line per scene, while the backdrop behind him changes: the hook → a sentence that lights up word by word → the problem → the guide → the plan (five steps that swap while the section is pinned) → before & after → what we do → client quotes → a light "Your move" finale |
 | `about.html` | The origin story: background, two worlds, toolkit, values, and the brand-guidelines proof |
 | `services.html` | Every service told as a short story (the problem → the fix → the happy ending). Deliverables and FAQs fold away under "See what's included". Each service has an anchor, e.g. `services.html#logo` |
 | `pricing.html` | "Choose your path": packages and à la carte pricing with a filter |
