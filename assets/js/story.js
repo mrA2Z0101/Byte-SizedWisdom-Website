@@ -61,6 +61,32 @@
     document.body.appendChild(rail);
   }
 
+  /* ---- Lit statements: split into words that light up as you scroll ---- */
+  var lits = Array.prototype.slice.call(document.querySelectorAll('.lit'));
+  lits.forEach(function (el) {
+    var frag = document.createDocumentFragment();
+    Array.prototype.slice.call(el.childNodes).forEach(function (node) {
+      var hl = node.nodeType === 1 && node.classList.contains('hl');
+      node.textContent.split(/(\s+)/).forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        var s = document.createElement('span');
+        s.className = hl ? 'w hl' : 'w';
+        s.textContent = part;
+        frag.appendChild(s);
+      });
+    });
+    el.textContent = '';
+    el.appendChild(frag);
+    el._words = el.querySelectorAll('.w');
+  });
+
+  /* ---- Pinned steps ---- */
+  var pins = Array.prototype.slice.call(document.querySelectorAll('.pin'));
+  pins.forEach(function (pin) {
+    pin.style.setProperty('--n', pin.querySelectorAll('.pin-step').length);
+  });
+
   /* ---- Scroll-driven state: reading progress, active chapter, journey line ---- */
   var progress = document.querySelector('.progress');
   var journeys = Array.prototype.slice.call(document.querySelectorAll('.journey'));
@@ -82,6 +108,31 @@
       railLinks.forEach(function (a, i) { a.classList.toggle('active', i === active); });
     }
 
+    lits.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      var p = Math.max(0, Math.min(1, (vh * 0.85 - r.top) / (vh * 0.5)));
+      var on = reduceMotion ? el._words.length : Math.round(p * el._words.length);
+      for (var i = 0; i < el._words.length; i++) el._words[i].classList.toggle('on', i < on);
+    });
+
+    pins.forEach(function (pin) {
+      var steps = pin.querySelectorAll('.pin-step');
+      var dial = pin.querySelectorAll('.pin-dial li');
+      var r = pin.getBoundingClientRect();
+      var span = pin.offsetHeight - vh;
+      var p = span > 0 ? Math.max(0, Math.min(1, -r.top / span)) : 0;
+      var idx = Math.min(steps.length - 1, Math.floor(p * steps.length));
+      for (var i = 0; i < steps.length; i++) {
+        steps[i].classList.toggle('on', i === idx);
+        if (dial[i]) {
+          dial[i].classList.toggle('on', i === idx);
+          dial[i].classList.toggle('done', i < idx);
+        }
+      }
+      var bar = pin.querySelector('.pin-bar');
+      if (bar) bar.style.setProperty('--p', ((idx + 1) / steps.length).toFixed(3));
+    });
+
     journeys.forEach(function (j) {
       var r = j.getBoundingClientRect();
       var fill = Math.max(0, Math.min(1, (vh * 0.6 - r.top) / r.height));
@@ -101,6 +152,34 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   update();
+
+  /* ---- Rotating testimonials ---- */
+  document.querySelectorAll('.quote-stage').forEach(function (stage) {
+    var items = stage.querySelectorAll('.quote-item');
+    var dots = document.createElement('div');
+    dots.className = 'quote-dots';
+    var current = 0;
+    var timer;
+    function show(n) {
+      current = n;
+      items.forEach(function (it, i) { it.classList.toggle('on', i === n); it.setAttribute('aria-hidden', String(i !== n)); });
+      dots.querySelectorAll('button').forEach(function (d, i) { d.setAttribute('aria-current', String(i === n)); });
+    }
+    function play() {
+      clearInterval(timer);
+      if (!reduceMotion) timer = setInterval(function () { show((current + 1) % items.length); }, 6000);
+    }
+    items.forEach(function (_, i) {
+      var d = document.createElement('button');
+      d.type = 'button';
+      d.setAttribute('aria-label', 'Show quote ' + (i + 1));
+      d.addEventListener('click', function () { show(i); play(); });
+      dots.appendChild(d);
+    });
+    stage.parentNode.insertBefore(dots, stage.nextSibling);
+    show(0);
+    play();
+  });
 
   /* ---- Pricing filter ---- */
   var filterBar = document.querySelector('[data-filter-bar]');

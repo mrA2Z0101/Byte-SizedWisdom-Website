@@ -8,9 +8,9 @@ Plain HTML, CSS, and JavaScript. There's no build step and no framework. GitHub 
 
 | File | Story role |
 | --- | --- |
-| `index.html` | The main story: Prologue → I. The Hero → II. The Obstacles → III. The Guide → IV. The Map → V. The Tools → VI. Tales from the Workshop → VII. The Voices → Epilogue |
+| `index.html` | The main story, told in short full-screen scenes with one idea each: the hook (a chat with Byte) → a sentence that lights up word by word → the problem → the guide → the plan (five steps that swap while the section is pinned) → before & after → what we do → client quotes → "Your move" |
 | `about.html` | The origin story: background, two worlds, toolkit, values, and the brand-guidelines proof |
-| `services.html` | Every service told as a short story (the problem → the turn → the happy ending), plus deliverables and FAQs. Each service has an anchor, e.g. `services.html#logo` |
+| `services.html` | Every service told as a short story (the problem → the fix → the happy ending). Deliverables and FAQs fold away under "See what's included". Each service has an anchor, e.g. `services.html#logo` |
 | `pricing.html` | "Choose your path": packages and à la carte pricing with a filter |
 | `contact.html` | "Your next chapter": contact details and the Calendly booking embed |
 | `404.html` | Lost-chapter page. It also redirects old routes (`/about`, `/services/logo`, …) to the new pages |
@@ -18,7 +18,7 @@ Plain HTML, CSS, and JavaScript. There's no build step and no framework. GitHub 
 ## Assets
 
 - `assets/css/story.css`: theme, layout, and chapter styles. Brand colors are CSS variables at the top.
-- `assets/js/story.js`: reading-progress bar, chapter rail, scroll reveals, journey timeline, mobile menu, and pricing filter. Every page still works without JavaScript.
+- `assets/js/story.js`: reading-progress bar, chapter rail, scroll reveals, word-by-word lit text, pinned steps, rotating quotes, mobile menu, and pricing filter. Every page still works without JavaScript.
 - `assets/docs/bsw-brand-guidelines.pdf`: the Byte-Sized Wisdom brand guidelines document.
 - `assets/img/favicon.svg`: the robot mark.
 
