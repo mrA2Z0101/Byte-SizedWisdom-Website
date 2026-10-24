@@ -506,7 +506,7 @@ details.faq p { padding-bottom: 14px; }
 .js .lit .w.on.hl { color: var(--highlight); }
 
 /* Problem beats: one line each, big */
-.beats { list-style: none; display: grid; gap: clamp(28px, 5vh, 48px); margin-top: clamp(40px, 7vh, 72px); }
+.beats { list-style: none; display: grid; gap: clamp(28px, 5vh, 48px); margin-top: clamp(40px, 7vh, 72px); justify-items: start; }
 .beat { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
 .beat .icon { margin: 0; width: 64px; height: 64px; border-radius: 18px; color: var(--warn); border-color: rgba(245, 165, 36, 0.35); background: rgba(245, 165, 36, 0.06); }
 .beat .icon svg { width: 28px; height: 28px; }
@@ -673,37 +673,27 @@ html:has(body.home) { scroll-snap-type: y proximity; }
 .mascot[data-mood="worried"] svg { filter: drop-shadow(0 18px 40px rgba(245, 165, 36, 0.35)); }
 .mascot[data-mood="worried"] .mascot-glow { background: radial-gradient(rgba(245, 165, 36, 0.5), transparent 70%); }
 
+/* Speech bubble. story.js picks the side (data-at) that is on screen and
+   clear of the scene's text, and hides it when no side is clear. */
 .say {
-  position: absolute; left: 50%; bottom: 96%; transform: translateX(-30%);
+  position: absolute; left: 50%; bottom: 96%; translate: -30% 0;
   font-size: calc(15px / var(--s)); max-width: calc(240px / var(--s)); width: max-content;
   padding: .7em 1em; border-radius: 1.1em 1.1em 1.1em .3em; line-height: 1.35; font-weight: 600;
   background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.28); color: #fff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  transition: opacity .35s ease, transform .35s ease;
+  transition: opacity .3s ease;
 }
-.say:empty { opacity: 0; transform: translateX(-30%) translateY(6px); }
+.say[data-at="left"]   { left: auto; right: 98%; bottom: auto; top: 22%; translate: none; border-radius: 1.1em 1.1em .3em 1.1em; }
+.say[data-at="right"]  { left: 98%; bottom: auto; top: 22%; translate: none; border-radius: 1.1em 1.1em 1.1em .3em; }
+.say[data-at="bottom"] { left: 50%; bottom: auto; top: 88%; translate: -50% 0; border-radius: .3em 1.1em 1.1em 1.1em; }
+.say:empty, .say.hide { opacity: 0; }
 .say.pop { animation: sayPop .45s cubic-bezier(.2, .8, .2, 1); }
-@keyframes sayPop { from { opacity: 0; transform: translateX(-30%) translateY(8px) scale(.9); } to { opacity: 1; transform: translateX(-30%); } }
+@keyframes sayPop { from { opacity: 0; scale: .85; } to { opacity: 1; scale: 1; } }
 .mascot[data-pose="next"] .say { background: rgba(255, 255, 255, 0.75); color: #052530; border-color: rgba(0, 120, 142, 0.25); }
 
-/* Poses (desktop) */
-.mascot[data-pose="hero"]    { --x: calc(73vw - 150px); --y: calc(54vh - 150px); --s: 1.25; }
-.mascot[data-pose="listen"]  { --x: calc(88vw - 150px); --y: calc(80vh - 150px); --s: .42; }
-.mascot[data-pose="problem"] { --x: calc(78vw - 150px); --y: calc(55vh - 150px); --s: .95; }
-.mascot[data-pose="guide"]   { --x: calc(50vw - 150px); --y: calc(75vh - 150px); --s: .95; }
-.mascot[data-pose="plan"]    { --x: calc(88vw - 150px); --y: calc(80vh - 150px); --s: .42; }
-.mascot[data-pose="away"]    { --x: calc(92vw - 150px); --y: calc(110vh - 150px); --s: .4; --o: 0; }
-.mascot[data-pose="voices"]  { --x: calc(88vw - 150px); --y: calc(78vh - 150px); --s: .45; }
-.mascot[data-pose="next"]    { --x: calc(50vw - 150px); --y: calc(77vh - 150px); --s: .9; }
-
+/* Poses: story.js sets --x, --y, --s and --o for each scene (see POSES there),
+   shrinking Byte if anything would be in his way. */
 @media (max-width: 900px) {
-  .mascot[data-pose="hero"]    { --x: calc(50vw - 150px); --y: calc(76vh - 150px); --s: .78; }
-  .mascot[data-pose="listen"]  { --x: calc(82vw - 150px); --y: calc(86vh - 150px); --s: .3; }
-  .mascot[data-pose="problem"] { --x: calc(84vw - 150px); --y: calc(37vh - 150px); --s: .3; }
-  .mascot[data-pose="guide"]   { --x: calc(50vw - 150px); --y: calc(74vh - 150px); --s: .75; }
-  .mascot[data-pose="plan"]    { --x: calc(82vw - 150px); --y: calc(86vh - 150px); --s: .3; }
-  .mascot[data-pose="voices"]  { --x: calc(82vw - 150px); --y: calc(86vh - 150px); --s: .3; }
-  .mascot[data-pose="next"]    { --x: calc(50vw - 150px); --y: calc(76vh - 150px); --s: .72; }
   .mascot[data-pose="listen"] .say, .mascot[data-pose="problem"] .say, .mascot[data-pose="plan"] .say, .mascot[data-pose="voices"] .say { display: none; }
 }
 .no-js .mascot { display: none; }
