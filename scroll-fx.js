@@ -29,25 +29,17 @@
   const toTop = () => { const r = scroller(); if (r) r.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }); };
 
   // ---------------------------------------------------------------------------------------------------------------
-  // Byte, the mascot. Each copy gets its own gradient ids.
-  let uid = 0;
+  // Byte, the mascot: the robot from the site's logo, drawn from the same blocks in the same colours, so the one in
+  // the nav and the one that flies are plainly the same character. Only the pupils and the antenna tip ever move.
   function byteSvg() {
-    const k = "fxb" + (++uid);
-    return '<svg class="fx-bot" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><defs>' +
-      '<linearGradient id="' + k + 'a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7DF4FF"/><stop offset=".45" stop-color="#14CFE0"/><stop offset="1" stop-color="#00809A"/></linearGradient>' +
-      '<radialGradient id="' + k + 'b"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#9FF6FF"/><stop offset="1" stop-color="#2AE8F5"/></radialGradient>' +
-      '<linearGradient id="' + k + 'c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8FAFF"/><stop offset="1" stop-color="#3FD8F2"/></linearGradient></defs>' +
-      '<rect x="95" y="20" width="10" height="28" rx="4" fill="#0098AE"/>' +
-      '<circle class="fx-bulb" cx="100" cy="17" r="11" fill="url(#' + k + 'b)"/>' +
-      '<rect x="8" y="90" width="20" height="40" rx="8" fill="#0090A6"/><rect x="172" y="90" width="20" height="40" rx="8" fill="#0090A6"/>' +
-      '<rect x="20" y="44" width="160" height="126" rx="40" fill="url(#' + k + 'a)"/>' +
-      '<rect x="44" y="52" width="112" height="14" rx="7" fill="#FFFFFF" opacity=".38"/>' +
-      '<rect x="38" y="80" width="124" height="72" rx="24" fill="#04121A"/>' +
-      '<circle cx="56" cy="138" r="6" fill="#FF8FB8" opacity=".45"/><circle cx="144" cy="138" r="6" fill="#FF8FB8" opacity=".45"/>' +
+    return '<svg class="fx-bot" viewBox="280 24.5 120 120" aria-hidden="true" focusable="false">' +
+      '<rect class="fx-bulb" x="335" y="40" width="10" height="10" fill="#00788e"/>' +
+      '<rect x="332" y="50" width="16" height="15" fill="#009ab2"/><rect x="332" y="50" width="16" height="3" fill="#00c8e0"/>' +
+      '<rect x="284" y="65" width="112" height="64" fill="#00adc0"/><rect x="284" y="65" width="112" height="4" fill="#00cce0"/>' +
+      '<rect x="300" y="97" width="16" height="16" fill="#040f12"/><rect x="364" y="97" width="16" height="16" fill="#040f12"/>' +
       '<g class="fx-look"><g class="fx-eyes">' +
-      '<rect x="62" y="96" width="24" height="28" rx="8" fill="url(#' + k + 'c)"/><rect x="114" y="96" width="24" height="28" rx="8" fill="url(#' + k + 'c)"/>' +
-      '<rect x="67" y="101" width="7" height="7" rx="2" fill="#FFFFFF"/><rect x="119" y="101" width="7" height="7" rx="2" fill="#FFFFFF"/></g></g>' +
-      '<path d="M90 134 q10 8 20 0" fill="none" stroke="#5CE8FA" stroke-width="4" stroke-linecap="round"/></svg>';
+      '<rect x="303" y="100" width="10" height="10" fill="#5ce0f8"/><rect x="367" y="100" width="10" height="10" fill="#5ce0f8"/>' +
+      '<rect x="306" y="103" width="4" height="4" fill="#c8f8ff"/><rect x="370" y="103" width="4" height="4" fill="#c8f8ff"/></g></g></svg>';
   }
 
   // speech bubbles: one helper for the hero bubble and the trail bubble
@@ -336,7 +328,7 @@
       // at rest he sits on the corner of the code window; on a phone (no window) in the hero's top right corner
       const keep = inner.style.transform; inner.style.transform = "";
       const card = $(".hide-md > div", inner), hb = hero.getBoundingClientRect(), cb = card && card.getBoundingClientRect();
-      rest = cb && cb.width > 0 ? { x: cb.right - hb.left - rs * 0.95, y: cb.top - hb.top - rs * 0.34 } : { x: W - 22 - rs / 2, y: 12 + rs / 2 };
+      rest = cb && cb.width > 0 ? { x: cb.right - hb.left - rs * 0.95, y: cb.top - hb.top - rs * 0.37 } : { x: W - 22 - rs / 2, y: 12 + rs / 2 };
       inner.style.transform = keep;
       fly = wide ? { x: W * 0.29, y: visTop + visH * 0.47 } : { x: W * 0.5, y: visTop + Math.min(visH * 0.2, 150) };
       cardW = stops[0].offsetWidth;
@@ -367,7 +359,7 @@
       const y = Math.max(8, S.y - size / 2 - h - 6);
       bubEl.style.transform = "translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0)";
     };
-    const look = (dx, dy) => lookG.setAttribute("transform", "translate(" + (dx * 5).toFixed(2) + " " + (dy * 4).toFixed(2) + ")");
+    const look = (dx, dy) => lookG.setAttribute("transform", "translate(" + (dx * 3).toFixed(2) + " " + (dy * 3).toFixed(2) + ")");
     const setMode = (m) => {
       const was = mode; mode = m;
       if (m === "gone") bub.hush();
