@@ -1,0 +1,164 @@
+/* Byte-Sized Wisdom — scroll animation layer (scroll-fx.js).
+   Everything here is additive: the site reads and works without these two files, and with
+   "reduce motion" switched on nothing is pinned, hidden or moved. */
+
+/* ---------- Byte, the mascot ---------- */
+.fx-bot { display: block; width: 100%; height: 100%; overflow: visible; }
+.fx-bot .fx-eyes { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .fx-bot .fx-eyes { animation: fx-blink 5.2s infinite; }
+  .fx-bot .fx-bulb { animation: fx-bulb 3.2s steps(1) infinite; }   /* the antenna tip pings, like a beacon */
+}
+@keyframes fx-blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.12); } }
+@keyframes fx-bulb { 0%, 100% { fill: #00788e; } 84% { fill: #5ce0f8; } 92% { fill: #00788e; } }
+
+/* ---------- speech bubbles: a bright plate with one corner cut ---------- */
+.fx-bubble {
+  position: absolute; z-index: 5; margin: 0; width: max-content; max-width: min(16rem, 64vw);
+  padding: 8px 12px 9px; background: #2AE8F5; color: #030E14;
+  font: 700 13px/1.25 'Plus Jakarta Sans', 'Outfit', sans-serif; letter-spacing: .01em;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 10px));
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .16s, visibility 0s .16s;
+}
+.fx-bubble.is-on { opacity: 1; visibility: visible; transition: opacity .16s; }
+.fx-bubble.is-flip { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 12px) 100%, 0 100%); }
+
+/* ---------- the trail: Byte as scroll progress, under the nav ---------- */
+.fx-trail {
+  --p: 0; --cw: 44px; position: fixed; z-index: 120; left: 0; right: 0; top: var(--fx-nav, 65px);
+  height: 0; pointer-events: none;
+}
+.fx-trail__line {
+  position: absolute; left: 0; top: -1px; height: 2px;
+  width: calc(var(--p) * (100% - var(--cw)) + var(--cw) * .5);
+  background: linear-gradient(90deg, transparent, #00C4D4 35%, #2AE8F5);
+  box-shadow: 0 0 10px rgba(42, 232, 245, .45);
+}
+.fx-trail__bot {
+  position: absolute; top: calc(var(--cw) * -.5); left: calc(var(--p) * (100% - var(--cw)));
+  width: var(--cw); height: var(--cw); padding: 0; margin: 0; display: block;
+  background: none; border: 0; border-radius: 12px; cursor: pointer; pointer-events: auto;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .5));
+}
+.fx-trail__bot .fx-bot { transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
+.fx-trail__bot:hover .fx-bot, .fx-trail__bot:focus-visible .fx-bot { transform: scale(1.2) rotate(-6deg); }
+.fx-trail__bot:focus-visible { outline: 2px solid #2AE8F5; outline-offset: 2px; }
+.fx-trail.is-done .fx-trail__bot .fx-bot { transform: rotate(-8deg); }
+.fx-trail__bubble { top: 28px; left: 12px; }
+.fx-trail__line, .fx-trail__bot { opacity: 0; visibility: hidden; transition: opacity .25s, visibility 0s .25s; }
+.fx-trail.is-on .fx-trail__line, .fx-trail.is-on .fx-trail__bot { opacity: 1; visibility: visible; transition: opacity .25s; }
+.fx-trail.is-covered { display: none; }
+@media (max-width: 600px) { .fx-trail { --cw: 38px; } }
+@media print { .fx-trail { display: none; } }
+
+/* ---------- chapter streaks: three lines shoot in from the screen edge to each section label ---------- */
+[data-fx-ch] { position: relative; }
+[data-fx-ch]::before {
+  content: ""; position: absolute; right: calc(100% + 12px); top: 50%; margin-top: -9px;
+  width: var(--fx-gut, 0px); height: 18px; pointer-events: none;
+  background:
+    linear-gradient(#2AE8F5, #2AE8F5) 0 0 / 100% 3px no-repeat,
+    linear-gradient(rgba(0, 196, 212, .75), rgba(0, 196, 212, .75)) 0 8px / 82% 2px no-repeat,
+    linear-gradient(rgba(0, 158, 174, .55), rgba(0, 158, 174, .55)) 0 16px / 92% 2px no-repeat;
+  transform-origin: left center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-fx-ch]::before { transform: scaleX(0); transition: transform .9s cubic-bezier(.2, .7, .2, 1) .12s; }
+  [data-fx-ch="1"]::before { transform: none; }
+}
+
+/* ---------- reveals: headings and cards rise in once, as their section arrives ---------- */
+[data-fx-r="0"] { opacity: 0 !important; transform: translate3d(0, 22px, 0) !important; transition: none !important; }
+[data-fx-r="1"] {
+  transition: opacity .6s cubic-bezier(.2, .7, .2, 1) var(--fx-d, 0ms),
+              transform .6s cubic-bezier(.2, .7, .2, 1) var(--fx-d, 0ms) !important;
+}
+
+/* ---------- scroll to fly: the hero pins, Byte takes off and the two disciplines pass as stops ---------- */
+section[data-fx-hero] { position: sticky !important; top: var(--fx-pin, 65px); z-index: 0; }
+section[data-fx-hero="done"] { visibility: hidden; }
+section[data-fx-hero] ~ * { position: relative; z-index: 2; }
+.fx-run { pointer-events: none; z-index: 0 !important; }
+section[data-fx-hero] > [data-fx-inner] { will-change: opacity, transform; }
+
+.fx-warp { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+.fx-byte {
+  position: absolute; left: 0; top: 0; z-index: 4; width: var(--fx-bw, 180px); height: var(--fx-bw, 180px);
+  transform-origin: 50% 50%; cursor: pointer; opacity: 0; transition: opacity .3s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .4));
+}
+.fx-byte.is-ready { opacity: 1; }
+.fx-byte__body { width: 100%; height: 100%; }
+.fx-byte.is-poked .fx-eyes { animation: none; transform: scaleY(.3); }
+/* speed lines behind him: they stretch with how fast you scroll */
+.fx-byte__jet { position: absolute; right: 100%; top: 0; bottom: 0; width: 1px; opacity: 0; transition: opacity .25s; }
+.fx-byte.is-flying .fx-byte__jet { opacity: 1; }
+/* square-ended and in the logo's own three teals, so they read as more of the same pixels */
+.fx-byte__jet i { position: absolute; right: 0; height: 3.4%; background: #00cce0; width: calc(14px + var(--fx-v, 0) * 1px); }
+.fx-byte__jet i:nth-child(1) { top: 36%; }
+.fx-byte__jet i:nth-child(2) { top: 53%; width: calc(22px + var(--fx-v, 0) * 1.3px); background: #00adc0; }
+.fx-byte__jet i:nth-child(3) { top: 70%; width: calc(10px + var(--fx-v, 0) * .8px); background: #00788e; }
+
+.fx-hero-bubble { left: 0; top: 0; }
+
+.fx-stops { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.fx-stop {
+  position: absolute; left: 0; top: 0; width: min(46vw, 560px); display: block; overflow: hidden;
+  background: #0A2432; color: #D8EEF2; text-decoration: none; border-radius: 16px;
+  border: 1px solid rgba(0, 196, 212, .18);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+  pointer-events: auto; visibility: hidden; will-change: transform;
+  transition: border-color .3s, box-shadow .3s;
+}
+.fx-stop.is-here { border-color: rgba(42, 232, 245, .5); box-shadow: 0 24px 60px rgba(0, 0, 0, .45), 0 0 44px rgba(0, 196, 212, .16); }
+.fx-stop:focus-visible { outline: 2px solid #2AE8F5; outline-offset: 3px; }
+.fx-stop__bar { display: block; height: 4px; background: linear-gradient(90deg, #00C4D4, #2AE8F5 55%, #7DF4FF); }
+.fx-stop:nth-child(2) .fx-stop__bar { background: linear-gradient(90deg, #7DF4FF, #2AE8F5 45%, #009EAE); }
+.fx-stop__body { display: block; padding: clamp(18px, 2.2vw, 30px); }
+.fx-stop__kicker {
+  display: flex; align-items: center; gap: 10px; font: 400 12px/1 'Share Tech Mono', ui-monospace, monospace;
+  letter-spacing: .14em; text-transform: uppercase; color: #8AACB4;
+}
+.fx-stop__kicker b { font-weight: 400; color: #2AE8F5; }
+.fx-stop__title {
+  display: block; margin: 14px 0 8px; font: 800 clamp(26px, 3.2vw, 44px)/1.05 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -.02em; color: #D8EEF2;
+}
+.fx-stop__meta { display: block; font-size: 15px; line-height: 1.6; color: #8AACB4; max-width: 34em; }
+.fx-stop__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.fx-stop__chips i {
+  font-style: normal; font-size: 12px; line-height: 1; padding: 6px 10px; border-radius: 100px; white-space: nowrap;
+  color: #00C4D4; background: rgba(0, 196, 212, .08); border: 1px solid rgba(0, 196, 212, .2);
+}
+.fx-stop__go { display: block; margin-top: 18px; font-size: 14px; font-weight: 600; color: #2AE8F5; }
+.fx-stop:hover .fx-stop__go { text-decoration: underline; text-underline-offset: 3px; }
+
+.fx-hud {
+  position: absolute; z-index: 4; right: 24px; top: calc(var(--fx-vis-top, 0px) + 18px); margin: 0;
+  display: flex; align-items: center; gap: 10px;
+  font: 400 12px/1 'Share Tech Mono', ui-monospace, monospace; letter-spacing: .18em; text-transform: uppercase; color: #8AACB4;
+  opacity: 0; transition: opacity .25s; pointer-events: none;
+}
+section.is-flying > .fx-hud { opacity: 1; }
+.fx-hud b { font-weight: 400; font-size: 14px; letter-spacing: .06em; color: #2AE8F5; font-variant-numeric: tabular-nums; }
+.fx-hud__pips { display: flex; gap: 5px; }
+.fx-hud__pips i { width: 9px; height: 9px; border-radius: 2px; box-shadow: inset 0 0 0 1.5px #4A7A8A; transition: background-color .2s, box-shadow .2s; }
+.fx-hud__pips i.is-hit { background: #2AE8F5; box-shadow: 0 0 10px rgba(42, 232, 245, .6); }
+
+.fx-hint {
+  position: absolute; z-index: 4; left: 50%; bottom: 14px; margin: 0; transform: translateX(-50%); white-space: nowrap; pointer-events: none;
+  font: 400 12px/1 'Share Tech Mono', ui-monospace, monospace; letter-spacing: .22em; text-transform: uppercase; color: #00C4D4;
+}
+.fx-hint span { display: inline-block; margin-left: .35em; animation: fx-nudge 1.4s ease-in-out infinite; }
+@keyframes fx-nudge { 50% { transform: translateY(5px); } }
+/* on a wide screen the hero's foot can sit just under the fold, so the hint rides the fold instead */
+@media (min-width: 769px) { .fx-hint { bottom: auto; top: calc(var(--fx-fold, 100%) - 30px); } }
+
+@media (max-width: 768px) {
+  .fx-stop { width: 88vw; }
+  .fx-stop__chips i:nth-child(n + 5) { display: none; }
+  .fx-hud { right: 16px; top: calc(var(--fx-vis-top, 0px) + 12px); }
+}
